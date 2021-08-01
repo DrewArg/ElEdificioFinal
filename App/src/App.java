@@ -24,6 +24,11 @@ public class App {
     public static int armaPrincipal = 17;
     public static int armaSecundaria = 18;
     public static int bonusComidaTurnos = 19;
+    public static int suerteArmas = 20;
+    public static int suerteSigilo = 21;
+    public static int suerteGeneral = 22;
+    public static int suerteAgua = 23;
+    public static int suerteDaño = 24;
 
     /* ----- ----- ADICIONALES ----- ----- */
 
@@ -89,9 +94,6 @@ public class App {
 
         /* ----- ----- ARMA SECUNDARIA ----- ----- */
         // 0 --> puños
-
-        /* ----- ----- MUTANTES ----- ----- */
-        int[] statsMutantes = {};
 
         mensaje = "Antes de comenzar tu aventura ten en cuenta que hay algunos factores que irán determinando el estado de tu personaje, no dejes que la Vida llegue a 0 (cero)  o morirás. Cuando tu sed llegue a 100 (cien) morirás de sed.";
         devuelveElMensaje(mensaje, "El Edificio - Introducción", info);
