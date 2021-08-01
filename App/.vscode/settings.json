@@ -1,0 +1,17 @@
+{
+    "Comentario 1 ": {
+        "scope": "java",
+        "prefix": "coment1",
+        "body": "/* ----- ----- $1 ----- -----*/",
+        "description": "Comentario de una línea"
+    },
+    "Comentario 2": {
+        "scope": "java",
+        "prefix": "coment3",
+        "body": [
+            "/* -------------------------*/",
+            "/*$1*/",
+            "/* -------------------------*/"
+        ]
+    },
+}
