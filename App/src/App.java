@@ -918,7 +918,7 @@ public class App {
 
     // funcion random para el daño del arma
 
-    public static int[] elegirEnemigo(String[] enemigos, String armaEnemigos[]) {
+    public static int[] elegirEnemigo(String[] enemigos, String[] armaEnemigos) {
         Random random = new Random();
 
         int vidaEnemigo = 0;
