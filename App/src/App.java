@@ -41,24 +41,26 @@ public class App {
 
     public static void main(String[] args) throws Exception {
 
-        /* ----- ----- ARRAYS ----- ----- */
+        /* ----- ----- ESTADO ----- ----- */
 
         int[] stats = { vida, sed, dañoJugador, dañoMaximoArma, bonusVendaje, bonusComida, bonusMonster, monsters,
                 vendajes, comidas, llavesComunes, suerte, bonusSuerte, botellasLlenas, botellasVacias, bonusAgua,
-                dropeoAgua, armaPrincipal, armaSecundaria, bonusComidaTurnos };
-
-        /* ------------------------- */
-        /* VARIABLES GENERALES */
-        /* ------------------------- */
+                dropeoAgua, armaPrincipal, armaSecundaria, bonusComidaTurnos, suerteArmas, suerteSigilo, suerteGeneral,
+                suerteAgua, suerteDaño };
 
         /* ----- ----- JUGADOR ----- ----- */
         stats[vida] = 100; // maximo de vida
         stats[sed] = 80; // sed inicial
         stats[dañoJugador] = 0;
 
-        /* ----- ----- Suerte ----- ----- */
+        /* ----- ----- SUERTE ----- ----- */
         stats[suerte] = 0;
         stats[dropeoAgua] = 0;
+        stats[suerteArmas] = 0;
+        stats[suerteSigilo] = 0;
+        stats[suerteGeneral] = 0;
+        stats[suerteAgua] = 0;
+        stats[suerteDaño] = 0;
 
         /* ----- ----- ARMAS ----- ----- */
         stats[dañoMaximoArma] = 0;
@@ -288,71 +290,30 @@ public class App {
 
         boolean flagComidas = false;
 
-        /* ----- ----- ENEMIGOS ----- ----- */
-        int vidaEnemigo;
-        int dañoMaximoEnemigo = 0;
-        int dañoEnemigo;
-        String enemigo, armaEnemigo;
-
         /* ------------------------- */
         /* ARRAYS ENEMIGOS */
         /* ------------------------- */
-        String enemigos[] = { "una anciana", "Bob Esponja", "Cristian Castro", "Ricky Fort", "Pikachu" };
-        String armasEnemigos[] = { "una katana", "un bazuka", "una cámara de fotos", "un palo de amasar",
-                "una toalla" };
+        String enemigos[] = { "un chico del delivery", "una anciana", "un leñador", "una nerd",
+                "uno de los programadores de este juego", "una doctora", "un tipo en un disfraz de empanada",
+                "una pop star", "un coplayer", "una chica militar", "un payaso" };
+        String armasEnemigos[] = { "un látigo", "un palo de amasar", "un martillo", "una katana", "una cámara de fotos",
+                "un cuchillo", "una motosierra", "una ballesta", "un bazuka" };
 
-        /* ------------------------- */
-        /* RANDOM DE ENEMIGO Y SU ARMA */
-        /* ------------------------- */
+        int[] statsEnemigo = elegirEnemigo(enemigos, armasEnemigos);
 
-        /* ----- ----- ENEMIGO ----- ----- */
-        enemigo = enemigos[random.nextInt(enemigos.length)];
+        String enemigo = enemigos[statsEnemigo[0]];
+        int vidaEnemigo = statsEnemigo[1];
+        String armaEnemigo = armasEnemigos[statsEnemigo[2]];
+        int dañoMaximoEnemigo = statsEnemigo[3];
+        int dañoRebote = statsEnemigo[4];
 
-        /* ----- ----- ANCIANA ----- ----- */
-        if (enemigo == enemigos[0]) {
-            vidaEnemigo = random.nextInt(100) + 100;
-        } /* ----- ----- BOB ESPONJA ----- ----- */
-        else if (enemigo == enemigos[1]) {
-            vidaEnemigo = random.nextInt(100) + 75;
-        } /* ----- ----- CRISTIAN CASTRO ----- ----- */
-        else if (enemigo == enemigos[2]) {
-            vidaEnemigo = random.nextInt(100) + 50;
-        } /* ----- ----- RICARDO FORT ----- ----- */
-        else if (enemigo == enemigos[3]) {
-            vidaEnemigo = random.nextInt(100) + 45;
-        } /* ----- ----- PIKACHU ----- ----- */
-        else {
-            vidaEnemigo = random.nextInt(100) + 35;
-        }
+        System.out.println("enemigo: " + enemigo);
+        System.out.println("vidaEnemigo: " + vidaEnemigo);
+        System.out.println("armaEnemigo: " + armaEnemigo);
+        System.out.println("dañoMaximoEnemigo: " + dañoMaximoEnemigo);
+        System.out.println("dañoRebote: " + dañoRebote);
 
-        /* ----- ----- ARMA ENEMIGO ----- ----- */
-        armaEnemigo = armasEnemigos[random.nextInt(armasEnemigos.length)];
-
-        /* ----- ----- KATANA ----- ----- */
-        if (armaEnemigo == armasEnemigos[0]) {
-            dañoMaximoEnemigo = random.nextInt(30) + 30;
-
-        } /* ----- ----- BAZUKA ----- ----- */
-        else if (armaEnemigo == armasEnemigos[1]) {
-            dañoMaximoEnemigo = random.nextInt(60) + 50;
-
-        } /* ----- ----- CAMARA DE FOTOS ----- ----- */
-        else if (armaEnemigo == armasEnemigos[2]) {
-            dañoMaximoEnemigo = random.nextInt(15) + 5;
-
-        } /* ----- ----- PALO DE AMASAR ----- ----- */
-        else if (armaEnemigo == armasEnemigos[3]) {
-            dañoMaximoEnemigo = random.nextInt(25) + 25;
-
-        } /* ----- ----- TOALLA ----- ----- */
-        else if (armaEnemigo == armasEnemigos[4]) {
-            dañoMaximoEnemigo = random.nextInt(80) + 35;
-            /* ----- ----- MODIFICAR VALOR ATAQUE TOALLA ----- ----- */
-        }
-
-        /* ------------------------- */
-        /* CONTACTO ENEMIGO - INCIO PELEA */
-        /* ------------------------- */
+        int dañoEnemigo;
 
         /* ------------------------- */
         /* DECISION */
@@ -434,7 +395,7 @@ public class App {
                     dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
 
                     stats[vida] = stats[vida] - dañoEnemigo;
-                    vidaEnemigo = vidaEnemigo - stats[dañoJugador];
+                    vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
                     rondas++;
 
                     JOptionPane.showMessageDialog(null,
@@ -499,7 +460,7 @@ public class App {
                         dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
 
                         stats[vida] = stats[vida] - dañoEnemigo;
-                        vidaEnemigo = vidaEnemigo - stats[dañoJugador];
+                        vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
                         rondas++;
 
                         JOptionPane.showMessageDialog(null,
@@ -588,15 +549,16 @@ public class App {
     /* ----- ----- ESTADOS JUGADOR ----- ----- */
 
     public static void statsJugador(int[] stats) {
-        JOptionPane.showMessageDialog(null, "> Vida = " + stats[0] + saltoLinea + ">Sed = " + stats[1],
+        JOptionPane.showMessageDialog(null, "> Vida = " + stats[vida] + saltoLinea + ">Sed = " + stats[sed],
                 "Tu estado actual", alerta);
     }
 
     public static void mochilaJugador(int[] stats) {
         JOptionPane.showMessageDialog(null,
-                "> Monsters = " + stats[7] + saltoLinea + ">Vendajes = " + stats[8] + saltoLinea + "> Comidas = "
-                        + stats[9] + saltoLinea + "> Llaves Comunes = " + stats[10] + saltoLinea
-                        + "> Botellas Llenas = " + stats[13] + saltoLinea + "> Botellas Vacias = " + stats[14],
+                "> Monsters = " + stats[monsters] + saltoLinea + ">Vendajes = " + stats[vendajes] + saltoLinea
+                        + "> Comidas = " + stats[comidas] + saltoLinea + "> Llaves Comunes = " + stats[llavesComunes]
+                        + saltoLinea + "> Botellas Llenas = " + stats[botellasLlenas] + saltoLinea
+                        + "> Botellas Vacias = " + stats[botellasVacias],
                 "Tu mochila", info);
     }
 
@@ -950,6 +912,195 @@ public class App {
         } else {
             return posicionPremio;
         }
+    }
+
+    /* ----- ----- ENEMIGOS Y ARMAS ----- ----- */
+
+    // funcion random para el daño del arma
+
+    public static int[] elegirEnemigo(String[] enemigos, String armaEnemigos[]) {
+        Random random = new Random();
+
+        int vidaEnemigo = 0;
+        int posicionEnemigoSeleccionado = 0;
+        int posicionArmaEnemigo = 0;
+        int dañoMaximoArmaEnemigo = 0;
+        int dañoRebote = 0;
+
+        posicionEnemigoSeleccionado = random.nextInt(enemigos.length);
+        int[] armaSeleccionada;
+
+        int[] statsEnemigo = { posicionEnemigoSeleccionado, vidaEnemigo, posicionArmaEnemigo, dañoMaximoArmaEnemigo,
+                dañoRebote };
+
+        switch (posicionEnemigoSeleccionado) {
+            case 0: // delivery
+                statsEnemigo[1] = random.nextInt(100) + 50;
+                armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
+                statsEnemigo[2] = armaSeleccionada[0];
+                statsEnemigo[3] = armaSeleccionada[1];
+                statsEnemigo[4] = armaSeleccionada[2];
+
+                break;
+
+            case 1: // anciana
+                statsEnemigo[1] = random.nextInt(200) + 50;
+                armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
+                statsEnemigo[2] = armaSeleccionada[0];
+                statsEnemigo[3] = armaSeleccionada[1];
+                statsEnemigo[4] = armaSeleccionada[2];
+                break;
+            case 2: // leñador
+                statsEnemigo[1] = random.nextInt(300) + 100;
+                armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
+                statsEnemigo[2] = armaSeleccionada[0];
+                statsEnemigo[3] = armaSeleccionada[1];
+                statsEnemigo[4] = armaSeleccionada[2];
+
+                break;
+
+            case 3:// nerd
+                statsEnemigo[1] = random.nextInt(250) + 50;
+                armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
+                statsEnemigo[2] = armaSeleccionada[0];
+                statsEnemigo[3] = armaSeleccionada[1];
+                statsEnemigo[4] = armaSeleccionada[2];
+
+                break;
+
+            case 4:// programadores
+                statsEnemigo[1] = random.nextInt(400) + 100;
+                armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
+                statsEnemigo[2] = armaSeleccionada[0];
+                statsEnemigo[3] = armaSeleccionada[1];
+                statsEnemigo[4] = armaSeleccionada[2];
+
+                break;
+
+            case 5:// doctora
+                statsEnemigo[1] = random.nextInt(150) + 50;
+                armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
+                statsEnemigo[2] = armaSeleccionada[0];
+                statsEnemigo[3] = armaSeleccionada[1];
+                statsEnemigo[4] = armaSeleccionada[2];
+
+                break;
+
+            case 6:// empanada
+                statsEnemigo[1] = random.nextInt(150) + 25;
+                armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
+                statsEnemigo[2] = armaSeleccionada[0];
+                statsEnemigo[3] = armaSeleccionada[1];
+                statsEnemigo[4] = armaSeleccionada[2];
+
+                break;
+
+            case 7:// pop star
+                statsEnemigo[1] = random.nextInt(300) + 25;
+                armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
+                statsEnemigo[2] = armaSeleccionada[0];
+                statsEnemigo[3] = armaSeleccionada[1];
+                statsEnemigo[4] = armaSeleccionada[2];
+
+                break;
+
+            case 8:// cosplayer
+                statsEnemigo[1] = random.nextInt(400) + 50;
+                armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
+                statsEnemigo[2] = armaSeleccionada[0];
+                statsEnemigo[3] = armaSeleccionada[1];
+                statsEnemigo[4] = armaSeleccionada[2];
+
+                break;
+
+            case 9:// chica militar
+                statsEnemigo[1] = random.nextInt(500) + 75;
+                armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
+                statsEnemigo[2] = armaSeleccionada[0];
+                statsEnemigo[3] = armaSeleccionada[1];
+                statsEnemigo[4] = armaSeleccionada[2];
+
+                break;
+
+            case 10:// payaso
+                statsEnemigo[1] = random.nextInt(650) + 100;
+                armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
+                statsEnemigo[2] = armaSeleccionada[0];
+                statsEnemigo[3] = armaSeleccionada[1];
+                statsEnemigo[4] = armaSeleccionada[2];
+
+                break;
+
+        }
+
+        return statsEnemigo;
+
+    }
+
+    public static int[] elegirArmaEnemigo(String[] armaEnemigos) {
+        Random random = new Random();
+        int dañoMaximoArma = 0;
+
+        int posicionArmaSeleccionada = 0;
+        posicionArmaSeleccionada = random.nextInt(armaEnemigos.length);
+
+        int dañoRebote = 0;
+
+        int[] statsArma = { posicionArmaSeleccionada, dañoMaximoArma, dañoRebote };
+
+        switch (posicionArmaSeleccionada) {
+            case 0: // látigo
+                statsArma[1] = random.nextInt(30);
+
+                break;
+
+            case 1: // palo de amasar
+                statsArma[1] = random.nextInt(15) + 0;
+
+                break;
+            case 2: // martillo
+                statsArma[1] = random.nextInt(60);
+
+                break;
+
+            case 3:// katana
+                statsArma[1] = random.nextInt(65) + 15;
+
+                break;
+
+            case 4:// cámara
+                statsArma[1] = random.nextInt(10);
+
+                break;
+
+            case 5:// cuchillo
+                statsArma[1] = random.nextInt(70);
+
+                break;
+
+            case 6:// motosierra
+                statsArma[1] = random.nextInt(125) + 25;
+
+                break;
+
+            case 7:// ballesta
+                statsArma[1] = random.nextInt(50);
+
+                break;
+
+            case 8:// bazuka
+                statsArma[1] = random.nextInt(200) + 15;
+                statsArma[2] = random.nextInt(200);
+                while (statsArma[2] > statsArma[1]) {
+                    statsArma[2] = random.nextInt(200);
+                }
+
+                break;
+
+        }
+
+        return statsArma;
+
     }
 
     /* ----- ----- MENSAJES ----- ----- */
