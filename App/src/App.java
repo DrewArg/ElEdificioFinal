@@ -39,6 +39,19 @@ public class App {
     public static final String saltoLinea = "\n";
     public static String mensaje = "";
 
+    /* ----- ----- PELEA ----- ----- */
+
+    public static int rondas = 0;
+
+    public static String enemigo = "";
+    public static int vidaEnemigo = 0;
+    public static int dañoEnemigo = 0;
+    public static int dañoRebote = 0;
+
+    public static String arma = "";
+    public static String armaEnemigo = "";
+    public static int dañoMaximoEnemigo = 0;
+
     public static void main(String[] args) {
 
         /* ----- ----- ESTADO ----- ----- */
@@ -280,11 +293,6 @@ public class App {
     public static int[] pelea(int[] stats) {
 
         Random random = new Random();
-        String arma = "";
-
-        /* ----- ----- RONDAS PELEA ----- ----- */
-
-        int rondas = 0;
 
         /* ----- ----- COMIDAS ----- ----- */
 
@@ -301,13 +309,11 @@ public class App {
 
         int[] statsEnemigo = elegirEnemigo(enemigos, armasEnemigos);
 
-        String enemigo = enemigos[statsEnemigo[0]];
-        int vidaEnemigo = statsEnemigo[1];
-        String armaEnemigo = armasEnemigos[statsEnemigo[2]];
-        int dañoMaximoEnemigo = statsEnemigo[3];
-        int dañoRebote = statsEnemigo[4];
-
-        int dañoEnemigo;
+        enemigo = enemigos[statsEnemigo[0]];
+        vidaEnemigo = statsEnemigo[1];
+        armaEnemigo = armasEnemigos[statsEnemigo[2]];
+        dañoMaximoEnemigo = statsEnemigo[3];
+        dañoRebote = statsEnemigo[4];
 
         /* ------------------------- */
         /* DECISION */
@@ -363,12 +369,7 @@ public class App {
             stats[vida] = stats[vida] - dañoEnemigo;
             vidaEnemigo = vidaEnemigo - stats[dañoJugador];
             rondas++;
-
-            JOptionPane.showMessageDialog(null,
-                    "Ronda: " + rondas + "\n" + "\n El ataque de " + enemigo + " con " + armaEnemigo + " es de: "
-                            + dañoEnemigo + "\n Tu ataque con " + arma + " es de: " + stats[dañoJugador] + "\n"
-                            + "\n La vida restante de: " + enemigo + " es de: " + vidaEnemigo
-                            + "\n Tu vida restante es de: " + stats[vida]);
+            mensajeRonda(stats);
 
             while (stats[vida] > 0 && vidaEnemigo > 0 && stats[sed] < 100 && rondas <= 11) {
 
@@ -392,12 +393,7 @@ public class App {
                     vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
                     rondas++;
 
-                    JOptionPane.showMessageDialog(null,
-                            "Ronda: " + rondas + "\n" + "\n El ataque de " + enemigo + " con " + armaEnemigo
-                                    + " es de: " + dañoEnemigo + "\n Tu bonus de daño es de: " + stats[bonusMonster]
-                                    + "\n Tu ataque total con " + arma + " es de: " + stats[dañoJugador] + "\n"
-                                    + "\n La vida restante de: " + enemigo + " es de: " + vidaEnemigo
-                                    + "\n Tu vida restante es de: " + stats[vida]);
+                    mensajeRonda(stats);
 
                 } else if (accion == 1) {
                     /* ----- ----- REVISAR LA MOCHILA ----- ----- */
@@ -432,8 +428,9 @@ public class App {
                             /* CODEAR */
                             /* ------------------------- */
                         } else {
-                            JOptionPane.showMessageDialog(null, "No te quedan mas comidas", "Comidas",
-                                    JOptionPane.INFORMATION_MESSAGE);
+                            mensaje = "No te quedan mas comidas";
+                            devuelveElMensaje(mensaje, "Comidas", alerta);
+
                         }
                         /* ----- ----- CODIAR ----- ----- */
                     } else if (accionBonus == 2) {
@@ -457,16 +454,11 @@ public class App {
                         vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
                         rondas++;
 
-                        JOptionPane.showMessageDialog(null,
-                                "Ronda: " + rondas + "\n" + "\n El ataque de " + enemigo + " con " + armaEnemigo
-                                        + " es de: " + dañoEnemigo + "\n Tu bonus de daño es de: " + stats[bonusMonster]
-                                        + "\n Tu ataque total con " + arma + " es de: " + stats[dañoJugador] + "\n"
-                                        + "\n La vida restante de: " + enemigo + " es de: " + vidaEnemigo
-                                        + "\n Tu vida restante es de: " + stats[vida]);
+                        mensajeRonda(stats);
                     }
                 }
                 System.out.println("ronda1: " + rondas);
-                ;
+
                 System.out.println("vida:" + stats[vida]);
                 System.out.println("bonus comida inicial: " + stats[bonusComida]);
                 System.out.println("bonus comida turnos: " + stats[bonusComidaTurnos]);
@@ -541,6 +533,15 @@ public class App {
     }
 
     /* ----- ----- ESTADOS JUGADOR ----- ----- */
+
+    public static void mensajeRonda(int[] stats) {
+        JOptionPane.showMessageDialog(null,
+                "Ronda: " + rondas + saltoLinea + saltoLinea + " El ataque de " + enemigo + " con " + armaEnemigo
+                        + " es de: " + dañoEnemigo + saltoLinea + "Tu bonus de daño es de: " + stats[bonusMonster]
+                        + saltoLinea + "Tu ataque total con " + arma + " es de: " + stats[dañoJugador] + saltoLinea
+                        + saltoLinea + "La vida restante de: " + enemigo + " es de: " + vidaEnemigo + saltoLinea
+                        + "Tu vida restante es de: " + stats[vida]);
+    }
 
     public static void statsJugador(int[] stats) {
         JOptionPane.showMessageDialog(null, "> Vida = " + stats[vida] + saltoLinea + ">Sed = " + stats[sed],
