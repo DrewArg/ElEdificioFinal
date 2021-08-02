@@ -371,6 +371,8 @@ public class App {
             rondas++;
             mensajeRonda(stats);
 
+            int rondasComidas = 0;
+
             while (stats[vida] > 0 && vidaEnemigo > 0 && stats[sed] < 100 && rondas <= 11) {
 
                 /* ----- ----- INICIO PELEA Y CICLO WHILE ----- ----- */
@@ -405,7 +407,7 @@ public class App {
 
                     if (accionBonus == 0) {
                         /* ----- ----- VENDAJE ----- ----- */
-                        rondas++;
+
                         if (stats[vendajes] > 0) {
                             stats[vida] = stats[vida] + stats[bonusVendaje];
                             stats[vendajes]--;
@@ -414,58 +416,106 @@ public class App {
                                             + "\n Tu vida actual es de: " + stats[vida] + "\n Te quedan: "
                                             + stats[vendajes] + " vendajes.");
 
+                            dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
+                            vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
+                            stats[vida] = stats[vida] - dañoEnemigo;
+
+                            stats[sed]++;
+
+                            mensajeRonda(stats);
+                            rondas++;
+
                         } else {
-                            JOptionPane.showMessageDialog(null, "No tienes más vendajes");
+                            mensaje = "No te quedan más vendajes";
+                            devuelveElMensaje(mensaje, "Vendajes", alerta);
 
                         }
+
+                        stats[dañoJugador] = 0;
                     } else if (accionBonus == 1) {
                         /* ----- ----- COMIDAS ----- ----- */
                         if (stats[comidas] > 0) {
                             flagComidas = true;
-                            stats[comidas]--;
-                            stats[vida] = stats[vida] + stats[bonusComida];
-                            /* ------------------------- */
-                            /* CODEAR */
-                            /* ------------------------- */
-                        } else {
-                            mensaje = "No te quedan mas comidas";
-                            devuelveElMensaje(mensaje, "Comidas", alerta);
+
+                            if (flagComidas == true) {
+
+                                stats[vida] = stats[vida] + stats[bonusComidaTurnos];
+
+                                mensaje = "Se han sumado " + stats[bonusComidaTurnos] + " puntos de vida.";
+                                devuelveElMensaje(mensaje, "Comidas", alerta);
+
+                                stats[comidas]--;
+
+                                rondasComidas++;
+
+                            } else {
+                                flagComidas = false;
+                                mensaje = "No te quedan más comidas";
+                                devuelveElMensaje(mensaje, "Comidas", alerta);
+
+                            }
+
+                            stats[dañoJugador] = 0;
+                            dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
+                            vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
+                            stats[vida] = stats[vida] - dañoEnemigo;
+
+                            stats[sed]++;
+
+                            mensajeRonda(stats);
+                            rondas++;
+
+                        } else if (accionBonus == 2) {
+                            /* ----- ----- MONSTERS ----- ----- */
+
+                            if (stats[monsters] > 0) {
+                                stats[monsters]--;
+                                JOptionPane.showMessageDialog(null, "Haz sumado " + stats[bonusMonster]
+                                        + " puntos de daño." + "\n Te quedan: " + stats[monsters] + " bonus de daño");
+
+                            } else {
+                                mensaje = "No te quedan más monsters";
+                                devuelveElMensaje(mensaje, "Comidas", alerta);
+                            }
+                            stats[dañoJugador] = 0;
+                            dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
+                            vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
+                            stats[vida] = stats[vida] - dañoEnemigo;
+
+                            stats[sed]++;
+
+                            mensajeRonda(stats);
+                            rondas++;
+
+                        } else if (accionBonus == 3) {
+                            /* ----- ----- MEJOR PELEO ----- ----- */
+                            stats[dañoJugador] = random.nextInt(stats[dañoMaximoArma]) + stats[bonusMonster];
+                            dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
+                            vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
+                            stats[vida] = stats[vida] - dañoEnemigo;
+
+                            stats[sed]++;
+
+                            mensajeRonda(stats);
+                            rondas++;
 
                         }
-                        /* ----- ----- CODIAR ----- ----- */
-                    } else if (accionBonus == 2) {
-                        /* ----- ----- MONSTERS ----- ----- */
-                        rondas++;
-                        if (stats[monsters] > 0) {
-                            stats[monsters]--;
-                            JOptionPane.showMessageDialog(null, "Haz sumado " + stats[bonusMonster] + " puntos de daño."
-                                    + "\n Te quedan: " + stats[monsters] + " bonus de daño");
-
-                        } else {
-                            JOptionPane.showMessageDialog(null, "No tienes más Monsters");
-                        }
-
-                    } else if (accionBonus == 3) {
-                        /* ----- ----- MEJOR PELEO ----- ----- */
-                        stats[dañoJugador] = random.nextInt(stats[dañoMaximoArma]) + stats[bonusMonster];
-                        dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
-
-                        stats[vida] = stats[vida] - dañoEnemigo;
-                        vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
-                        rondas++;
-
-                        mensajeRonda(stats);
                     }
+
+                    if (flagComidas == true && rondasComidas < 3) {
+                        stats[vida] = stats[vida] + stats[bonusComidaTurnos];
+                        mensaje = "Se han sumado " + stats[bonusComidaTurnos] + " puntos de vida.";
+                        devuelveElMensaje(mensaje, "Comidas", alerta);
+
+                        rondasComidas++;
+
+                    } else {
+                        if (rondasComidas == 3) {
+                            flagComidas = false;
+                        }
+                    }
+
                 }
-                System.out.println("ronda1: " + rondas);
-
-                System.out.println("vida:" + stats[vida]);
-                System.out.println("bonus comida inicial: " + stats[bonusComida]);
-                System.out.println("bonus comida turnos: " + stats[bonusComidaTurnos]);
-                System.out.println("----------------------.----------------------");
-
-                stats[sed]++;
-
             } /* ----- ----- FIN DEL WHILE LOOP ----- ----- */
 
             /* ----- ----- FUERON MAS DE 10 RONDAS ----- ----- */
@@ -513,7 +563,9 @@ public class App {
             return stats;
         } /* ----- ----- FIN DEL IF PRINCIPAL - PELEA ----- ----- */
 
-        else if (contacto == 1) {
+        else if (contacto == 1)
+
+        {
 
             /* ----- ----- HUIR ----- ----- */
             stats[suerte] = stats[bonusSuerte] + random.nextInt(99) + 1;
@@ -910,8 +962,6 @@ public class App {
     }
 
     /* ----- ----- ENEMIGOS Y ARMAS ----- ----- */
-
-    // funcion random para el daño del arma
 
     public static int[] elegirEnemigo(String[] enemigos, String[] armaEnemigos) {
         Random random = new Random();
