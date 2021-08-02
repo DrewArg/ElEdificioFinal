@@ -307,12 +307,6 @@ public class App {
         int dañoMaximoEnemigo = statsEnemigo[3];
         int dañoRebote = statsEnemigo[4];
 
-        System.out.println("enemigo: " + enemigo);
-        System.out.println("vidaEnemigo: " + vidaEnemigo);
-        System.out.println("armaEnemigo: " + armaEnemigo);
-        System.out.println("dañoMaximoEnemigo: " + dañoMaximoEnemigo);
-        System.out.println("dañoRebote: " + dañoRebote);
-
         int dañoEnemigo;
 
         /* ------------------------- */
