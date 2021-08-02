@@ -39,7 +39,7 @@ public class App {
     public static final String saltoLinea = "\n";
     public static String mensaje = "";
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         /* ----- ----- ESTADO ----- ----- */
 
