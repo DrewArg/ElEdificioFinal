@@ -38,6 +38,7 @@ public class App {
     public static final int pregunta = 3;
     public static final String saltoLinea = "\n";
     public static String mensaje = "";
+    public static String palabra = "";
 
     /* ----- ----- PELEA ----- ----- */
 
@@ -321,9 +322,6 @@ public class App {
         dañoMaximoEnemigo = statsEnemigo[3];
         dañoRebote = statsEnemigo[4];
 
-        /* ------------------------- */
-        /* DECISION */
-        /* ------------------------- */
         String eleccion[] = { "Pelear", "Huir" };
         int contacto = JOptionPane.showOptionDialog(null,
                 "\n Ingresas en la habitación lo más rápido que puedes y cuando estás cerrando la puerta detrás "
@@ -337,8 +335,8 @@ public class App {
 
         if (contacto == 0) {
             /* ----- ----- PELEAR ----- ----- */
-            JOptionPane.showMessageDialog(null, "\t> Tu enemigo " + enemigo + " con " + armaEnemigo
-                    + "\n\t> Daño máximo de: " + dañoMaximoEnemigo + "\n\t> Vida: " + vidaEnemigo);
+            JOptionPane.showMessageDialog(null, "\t> Tu enemigo es " + enemigo + " con " + armaEnemigo
+                    + "\n\t>Tiene un daño máximo de: " + dañoMaximoEnemigo + "\n\t> Vida: " + vidaEnemigo);
 
             statsJugador(stats);
             mochilaJugador(stats);
@@ -368,114 +366,183 @@ public class App {
                         "> Arma Principal = " + "palo de escoba" + "\n> Arma Secundaria = " + "puños", "Tus armas",
                         JOptionPane.INFORMATION_MESSAGE);
             }
+            rondas++;
+            mensaje = ">Ha comenzado una nueva ronda de pelea. " + saltoLinea + ">Ronda: " + rondas;
+            devuelveElMensaje(mensaje, "Ronda Pelea", alerta);
 
             stats[dañoJugador] = random.nextInt(stats[dañoMaximoArma]) + stats[bonusMonster];
             dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
 
             stats[vida] = stats[vida] - dañoEnemigo;
             vidaEnemigo = vidaEnemigo - stats[dañoJugador];
-            rondas++;
+            System.out.println("ronda: " + rondas);
+
             mensajeRonda(stats);
 
-            while (stats[vida] > 0 && vidaEnemigo > 0 && stats[sed] < 100 && rondas <= 11) {
+            int rondasComidas = 0;
 
-                /* ----- ----- INICIO PELEA Y CICLO WHILE ----- ----- */
+            boolean flagFinTurno = false;
+            rondas++;
 
-                int accion;
-                int accionBonus;
+            while (rondas <= 10) {
 
-                /* ----- ----- DECISION ----- ----- */
-                String accionJugador[] = { "Atacar", "Revisar la mochila" };
+                mensaje = ">Ha comenzado una nueva ronda de pelea. " + saltoLinea + ">Ronda: " + rondas;
+                devuelveElMensaje(mensaje, "Ronda Pelea", alerta);
 
-                accion = JOptionPane.showOptionDialog(null, "> ¿Qué deseas hacer?", "Acción",
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, accionJugador, accionJugador[0]);
+                while (stats[vida] > 0 && vidaEnemigo > 0 && stats[sed] < 100 && flagFinTurno == false) {
 
-                if (accion == 0) {
-                    /* ----- ----- ATACAR ----- ----- */
-                    stats[dañoJugador] = random.nextInt(stats[dañoMaximoArma]) + stats[bonusMonster];
-                    dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
+                    if (flagComidas == true && rondasComidas < 3) {
+                        stats[vida] = stats[vida] + stats[bonusComidaTurnos];
 
-                    stats[vida] = stats[vida] - dañoEnemigo;
-                    vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
-                    rondas++;
+                        mensaje = ">Gracias al efecto de la comida que haz consumido, haz sumado: "
+                                + stats[bonusComidaTurnos] + " puntos de vida más esta ronda." + saltoLinea
+                                + ">Seguirás sumando vida por " + (3 - rondasComidas) + " rondas de pelea más.";
 
-                    mensajeRonda(stats);
+                        devuelveElMensaje(mensaje, "Comidas", info);
 
-                } else if (accion == 1) {
-                    /* ----- ----- REVISAR LA MOCHILA ----- ----- */
+                        rondasComidas++;
 
-                    String bonus[] = { "Vendaje", "Comida", "Daño", "Mejor Peleo" };
-
-                    accionBonus = JOptionPane.showOptionDialog(null, "¿Qué bonus desea tomar de tu mochila?", "Bonus",
-                            JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, bonus, bonus[0]);
-
-                    if (accionBonus == 0) {
-                        /* ----- ----- VENDAJE ----- ----- */
-                        rondas++;
-                        if (stats[vendajes] > 0) {
-                            stats[vida] = stats[vida] + stats[bonusVendaje];
-                            stats[vendajes]--;
-                            JOptionPane.showMessageDialog(null,
-                                    "Te has curado " + stats[bonusVendaje] + " puntos de vida."
-                                            + "\n Tu vida actual es de: " + stats[vida] + "\n Te quedan: "
-                                            + stats[vendajes] + " vendajes.");
-
-                        } else {
-                            JOptionPane.showMessageDialog(null, "No tienes más vendajes");
-
+                    } else {
+                        if (rondasComidas == 3) {
+                            flagComidas = false;
                         }
-                    } else if (accionBonus == 1) {
-                        /* ----- ----- COMIDAS ----- ----- */
-                        if (stats[comidas] > 0) {
-                            flagComidas = true;
-                            stats[comidas]--;
-                            stats[vida] = stats[vida] + stats[bonusComida];
-                            /* ------------------------- */
-                            /* CODEAR */
-                            /* ------------------------- */
-                        } else {
-                            mensaje = "No te quedan mas comidas";
-                            devuelveElMensaje(mensaje, "Comidas", alerta);
+                    }
 
-                        }
-                        /* ----- ----- CODIAR ----- ----- */
-                    } else if (accionBonus == 2) {
-                        /* ----- ----- MONSTERS ----- ----- */
-                        rondas++;
-                        if (stats[monsters] > 0) {
-                            stats[monsters]--;
-                            JOptionPane.showMessageDialog(null, "Haz sumado " + stats[bonusMonster] + " puntos de daño."
-                                    + "\n Te quedan: " + stats[monsters] + " bonus de daño");
+                    /* ----- ----- INICIO PELEA Y CICLO WHILE ----- ----- */
 
-                        } else {
-                            JOptionPane.showMessageDialog(null, "No tienes más Monsters");
-                        }
+                    int accion;
+                    int accionBonus;
 
-                    } else if (accionBonus == 3) {
-                        /* ----- ----- MEJOR PELEO ----- ----- */
+                    /* ----- ----- DECISION ----- ----- */
+                    String accionJugador[] = { "Atacar", "Revisar la mochila" };
+
+                    accion = JOptionPane.showOptionDialog(null, "> ¿Qué deseas hacer?", "Acción",
+                            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, accionJugador,
+                            accionJugador[0]);
+
+                    if (accion == 0) {
+                        /* ----- ----- ATACAR ----- ----- */
                         stats[dañoJugador] = random.nextInt(stats[dañoMaximoArma]) + stats[bonusMonster];
                         dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
 
                         stats[vida] = stats[vida] - dañoEnemigo;
                         vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
-                        rondas++;
+                        flagFinTurno = true;
 
-                        mensajeRonda(stats);
+                    } else if (accion == 1) {
+                        /* ----- ----- REVISAR LA MOCHILA ----- ----- */
+
+                        String bonus[] = { "Vendaje", "Comida", "Daño", "Mejor Peleo" };
+
+                        accionBonus = JOptionPane.showOptionDialog(null, "¿Qué bonus desea tomar de tu mochila?",
+                                "Bonus", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, bonus,
+                                bonus[0]);
+
+                        if (accionBonus == 0) {
+                            /* ----- ----- VENDAJE ----- ----- */
+
+                            if (stats[vendajes] > 0) {
+                                stats[vida] = stats[vida] + stats[bonusVendaje];
+                                stats[vendajes]--;
+
+                                mensaje = ">Te haz curado " + stats[bonusVendaje] + " puntos de vida." + saltoLinea
+                                        + ">Te quedan: " + stats[vendajes] + " vendajes.";
+
+                                devuelveElMensaje(mensaje, "Vendajes", alerta);
+                                statsJugador(stats);
+
+                                dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
+                                stats[vida] = stats[vida] - dañoEnemigo;
+                                stats[dañoJugador] = 0;
+                                vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
+
+                                flagFinTurno = true;
+
+                            } else {
+                                mensaje = ">No te quedan más vendajes";
+                                devuelveElMensaje(mensaje, "Vendajes", alerta);
+
+                            }
+
+                        } else if (accionBonus == 1) {
+                            /* ----- ----- COMIDAS ----- ----- */
+                            if (stats[comidas] > 0) {
+                                stats[comidas]--;
+                                flagComidas = true;
+
+                                stats[vida] = stats[vida] + stats[bonusComidaTurnos];
+
+                                mensaje = ">Haz sumado " + stats[bonusComidaTurnos] + " puntos de vida." + saltoLinea
+                                        + ">Te quedan: " + stats[comidas] + " comidas.";
+                                devuelveElMensaje(mensaje, "Comidas", alerta);
+                                statsJugador(stats);
+
+                                rondasComidas++;
+
+                                dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
+                                stats[vida] = stats[vida] - dañoEnemigo;
+                                stats[dañoJugador] = 0;
+                                vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
+
+                                flagFinTurno = true;
+
+                            } else {
+
+                                mensaje = ">No te quedan más comidas";
+                                devuelveElMensaje(mensaje, "Comidas", alerta);
+
+                            }
+
+                        } else if (accionBonus == 2) {
+                            /* ----- ----- MONSTERS ----- ----- */
+
+                            if (stats[monsters] > 0) {
+                                stats[monsters]--;
+
+                                mensaje = ">Haz sumado " + stats[bonusMonster] + " puntos de daño." + saltoLinea
+                                        + ">Te quedan: " + stats[monsters] + "monsters.";
+                                devuelveElMensaje(mensaje, "Monsters", alerta);
+
+                                mensaje = ">Tu nuevo daño mínimo es de: " + stats[bonusMonster] + " por esta pelea.";
+                                devuelveElMensaje(mensaje, "Monsters", info);
+
+                                dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
+                                stats[vida] = stats[vida] - dañoEnemigo;
+                                stats[dañoJugador] = 0;
+                                vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
+
+                                flagFinTurno = true;
+
+                            } else {
+                                mensaje = ">No te quedan más monsters";
+                                devuelveElMensaje(mensaje, "Monsters", alerta);
+                            }
+
+                        } else if (accionBonus == 3) {
+                            /* ----- ----- MEJOR PELEO ----- ----- */
+                            stats[dañoJugador] = random.nextInt(stats[dañoMaximoArma]) + stats[bonusMonster];
+                            dañoEnemigo = random.nextInt(dañoMaximoEnemigo);
+                            vidaEnemigo = vidaEnemigo - stats[dañoJugador] - dañoRebote;
+                            stats[vida] = stats[vida] - dañoEnemigo;
+
+                            flagFinTurno = true;
+
+                        }
                     }
-                }
-                System.out.println("ronda1: " + rondas);
 
-                System.out.println("vida:" + stats[vida]);
-                System.out.println("bonus comida inicial: " + stats[bonusComida]);
-                System.out.println("bonus comida turnos: " + stats[bonusComidaTurnos]);
-                System.out.println("----------------------.----------------------");
+                }
 
                 stats[sed]++;
+                rondas++;
+                mensajeRonda(stats);
 
+                flagFinTurno = false;
             } /* ----- ----- FIN DEL WHILE LOOP ----- ----- */
 
             /* ----- ----- FUERON MAS DE 10 RONDAS ----- ----- */
-            if (rondas > 10) {
+            if (rondas > 10)
+
+            {
                 JOptionPane.showMessageDialog(null,
                         "Estás tan cansado por estas " + rondas + " rondas de pelea que no puedes luchar. Game Over. ",
                         "Game Over", JOptionPane.ERROR_MESSAGE);
@@ -519,7 +586,9 @@ public class App {
             return stats;
         } /* ----- ----- FIN DEL IF PRINCIPAL - PELEA ----- ----- */
 
-        else if (contacto == 1) {
+        else if (contacto == 1)
+
+        {
 
             /* ----- ----- HUIR ----- ----- */
             stats[suerte] = stats[bonusSuerte] + random.nextInt(99) + 1;
@@ -542,21 +611,21 @@ public class App {
 
     public static void mensajeRonda(int[] stats) {
         JOptionPane.showMessageDialog(null,
-                "Ronda: " + rondas + saltoLinea + saltoLinea + " El ataque de " + enemigo + " con " + armaEnemigo
-                        + " es de: " + dañoEnemigo + saltoLinea + "Tu bonus de daño es de: " + stats[bonusMonster]
-                        + saltoLinea + "Tu ataque total con " + arma + " es de: " + stats[dañoJugador] + saltoLinea
-                        + saltoLinea + "La vida restante de: " + enemigo + " es de: " + vidaEnemigo + saltoLinea
-                        + "Tu vida restante es de: " + stats[vida]);
+                "Ronda: " + rondas + saltoLinea + saltoLinea + ">El ataque de " + enemigo + " con " + armaEnemigo
+                        + " es de: " + dañoEnemigo + saltoLinea + ">Tu vida restante es de: " + stats[vida] + saltoLinea
+                        + saltoLinea + ">Tu bonus de daño es de: " + stats[bonusMonster] + saltoLinea
+                        + ">Tu ataque total con " + arma + " es de: " + stats[dañoJugador] + saltoLinea
+                        + ">La vida restante de " + enemigo + " es de: " + vidaEnemigo);
     }
 
     public static void statsJugador(int[] stats) {
-        JOptionPane.showMessageDialog(null, "> Vida = " + stats[vida] + saltoLinea + ">Sed = " + stats[sed],
+        JOptionPane.showMessageDialog(null, "> Vida = " + stats[vida] + saltoLinea + "> Sed = " + stats[sed],
                 "Tu estado actual", alerta);
     }
 
     public static void mochilaJugador(int[] stats) {
         JOptionPane.showMessageDialog(null,
-                "> Monsters = " + stats[monsters] + saltoLinea + ">Vendajes = " + stats[vendajes] + saltoLinea
+                "> Monsters = " + stats[monsters] + saltoLinea + "> Vendajes = " + stats[vendajes] + saltoLinea
                         + "> Comidas = " + stats[comidas] + saltoLinea + "> Llaves Comunes = " + stats[llavesComunes]
                         + saltoLinea + "> Botellas Llenas = " + stats[botellasLlenas] + saltoLinea
                         + "> Botellas Vacias = " + stats[botellasVacias],
@@ -569,7 +638,7 @@ public class App {
         Random random = new Random();
 
         int randomCuartoTrampa;
-        int randomPosiblePremio;
+        int randomPosiblePremio; // sin codear
         int largoPosiblePremio;
         int largoCuartoTrampa;
 
@@ -583,23 +652,13 @@ public class App {
         randomCuartoTrampa = random.nextInt(largoCuartoTrampa); // del 0 al maximo del array
         randomPosiblePremio = random.nextInt(largoPosiblePremio); // del 0 al maximo del array
 
-        // System.out.println(cuartoTrampa[juegos(cuartoTrampa, 0)]);
-        System.out.println(" ");
-        System.out.println("largo de cuartoTrampa: " + cuartoTrampa.length);
-        System.out.println("random de cuartoTrampa: " + randomCuartoTrampa);
-        System.out.println("--------------------------------------------------------");
-        System.out.println("largo de posiblePremio: " + posiblePremio.length);
-        System.out.println("random de posiblePremio: " + randomPosiblePremio);
-        System.out.println(" ");
-
         if (randomCuartoTrampa == 0) {
             /* ----- ----- biombo ----- ----- */
             stats = biombo(stats);
         } else if (randomCuartoTrampa == 1) {
             /* ----- ----- ahorcado ----- ----- */
-            JOptionPane.showMessageDialog(null, "Entraste al ahorcado. Perdiste 50 puntos de vida.", "Codeandose",
-                    JOptionPane.INFORMATION_MESSAGE);
-            stats[vida] = 50;
+            stats = ahorcado(stats);
+
         } else if (randomCuartoTrampa == 2) {
             /* ----- ----- caminos ----- ----- */
             stats = caminosDiferentes(stats);
@@ -638,13 +697,6 @@ public class App {
         randomString1 = String.valueOf(randomInt1);
         randomString2 = String.valueOf(randomInt2);
         randomString3 = String.valueOf(randomInt3);
-
-        /*
-         * sino tiene un string dentro del array, las opciones Integer no funcionan
-         * dentro del Optiondialog --> necesitaria un objeto
-         */
-
-        // Object[] elecciones = {randomInt1,randomInt2,randomInt3};
 
         System.out.println("camino correcto: A" + randomString1 + ", B" + randomString2 + " y C" + randomString3);
 
@@ -897,9 +949,140 @@ public class App {
         return stats;
     }
 
+    public static int[] ahorcado(int[] stats) {
+        Random aleatorio = new Random();
+        String[][] letras = new String[2][4];
+        String letra;
+        String palabras[] = { "AUTO", "CASA", "CAMA", "SOFA", "TASA" };
+        int vidas = 0, largoPalabras, randomPalabras;
+
+        largoPalabras = palabras.length;
+        randomPalabras = aleatorio.nextInt(largoPalabras);
+
+        if (randomPalabras == 0) {
+            palabra = palabras[0];
+        } else if (randomPalabras == 1) {
+            palabra = palabras[1];
+        } else if (randomPalabras == 2) {
+            palabra = palabras[3];
+        } else if (randomPalabras == 3) {
+            palabra = palabras[4];
+        } else if (randomPalabras == 4) {
+            palabra = palabras[5];
+        }
+
+        inicializarElArray(letras, palabra);
+        letra = "";
+
+        boolean resultado = mostrarResultado(letras);
+
+        while (vidas < 4 && resultado == false) {
+
+            letra = JOptionPane.showInputDialog("Ingrese una letra");
+
+            if (existeLaLetraEnLaPalabra(letras, letra) == false) {
+                vidas++;
+                mostrarAhorcado(vidas);
+            } else {
+                resultado = mostrarResultado(letras);
+            }
+
+        }
+
+        if (vidas >= 4) {
+            stats[vida] = 0;
+        } else if (vidas == 1) {
+            stats[vida] = stats[vida] - 25;
+            mensaje = "Felicitaciones, haz adivinado la palbara.";
+            devuelveElMensaje(mensaje, "Ahorcado", alerta);
+        } else if (vidas == 2) {
+            stats[vida] = stats[vida] - 50;
+            mensaje = "Felicitaciones, haz adivinado la palbara.";
+            devuelveElMensaje(mensaje, "Ahorcado", alerta);
+        } else if (vidas == 3) {
+            stats[vida] = stats[vida] - 75;
+            mensaje = "Felicitaciones, haz adivinado la palbara.";
+            devuelveElMensaje(mensaje, "Ahorcado", alerta);
+        } else if (vidas == 0) {
+
+            mensaje = "Felicitaciones, haz adivinado la palbara y por ende no haz muerto. ";
+            devuelveElMensaje(mensaje, "Ahorcado", info);
+        }
+        return stats;
+    }
+
+    public static void inicializarElArray(String[][] letras, String palabra) {
+        for (int i = 0; i < letras[0].length; i++) {
+            letras[0][i] = palabra.substring(i, i + 1);
+            letras[1][i] = "_";
+        }
+    }
+
+    public static boolean existeLaLetraEnLaPalabra(String[][] letras, String letra) {
+
+        boolean hayCoincidencia = false;
+
+        for (int i = 0; i < letras[0].length; i++) {
+            if (letra.equalsIgnoreCase(letras[0][i])) {
+                letras[1][i] = letras[0][i];
+                hayCoincidencia = true;
+            }
+        }
+        return hayCoincidencia;
+    }
+
+    public static boolean mostrarResultado(String[][] letras) {
+
+        boolean finDelWhile;
+        String resultado = "";
+        String auxiliar = "";
+        for (int i = 0; i < letras[0].length; i++) {
+            resultado = resultado + letras[1][i] + " ";
+            auxiliar = auxiliar + letras[1][i];
+        }
+        // corregir
+
+        mensaje = "Bienvenido, haz ingresado a la prueba del ahorcado. " + saltoLinea
+                + "Veamos si eres lo suficientemente inteligente como para adivinar la palabra secreta. " + saltoLinea
+                + resultado;
+
+        devuelveElMensaje(mensaje, "Ahorcado", alerta);
+
+        if (auxiliar.equalsIgnoreCase(palabra)) {
+
+            finDelWhile = true;
+
+        } else {
+            finDelWhile = false;
+
+        }
+
+        return finDelWhile;
+    }
+
+    public static void mostrarAhorcado(int cantidadErrores) {
+
+        if (cantidadErrores == 1) {
+            JOptionPane.showInternalMessageDialog(null, " 0 \n-|");
+
+        } else if (cantidadErrores == 2) {
+            JOptionPane.showInternalMessageDialog(null, " 0 \n-|-");
+
+        } else if (cantidadErrores == 3) {
+            JOptionPane.showInternalMessageDialog(null, " 0 \n-|- \n|  ");
+
+        } else if (cantidadErrores == 4) {
+            JOptionPane.showInternalMessageDialog(null, " 0 \n-|- \n|  |");
+            JOptionPane.showInternalMessageDialog(null, "Ahi se fue tu ultima vida.\n Fin el juego.");
+
+        }
+    }
+
     /* ----- ----- POSIBLE PREMIO ----- ----- */
 
     public static int cofre(String[] premio, int posicionPremio) {
+
+        // aún no incluido en historia.
         Random random = new Random();
 
         posicionPremio = random.nextInt(premio.length);
@@ -916,8 +1099,6 @@ public class App {
     }
 
     /* ----- ----- ENEMIGOS Y ARMAS ----- ----- */
-
-    // funcion random para el daño del arma
 
     public static int[] elegirEnemigo(String[] enemigos, String[] armaEnemigos) {
         Random random = new Random();
@@ -952,7 +1133,7 @@ public class App {
                 statsEnemigo[4] = armaSeleccionada[2];
                 break;
             case 2: // leñador
-                statsEnemigo[1] = random.nextInt(300) + 100;
+                statsEnemigo[1] = random.nextInt(200) + 100;
                 armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
                 statsEnemigo[2] = armaSeleccionada[0];
                 statsEnemigo[3] = armaSeleccionada[1];
@@ -997,7 +1178,7 @@ public class App {
                 break;
 
             case 7:// pop star
-                statsEnemigo[1] = random.nextInt(300) + 25;
+                statsEnemigo[1] = random.nextInt(200) + 25;
                 armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
                 statsEnemigo[2] = armaSeleccionada[0];
                 statsEnemigo[3] = armaSeleccionada[1];
@@ -1006,7 +1187,7 @@ public class App {
                 break;
 
             case 8:// cosplayer
-                statsEnemigo[1] = random.nextInt(400) + 50;
+                statsEnemigo[1] = random.nextInt(250) + 50;
                 armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
                 statsEnemigo[2] = armaSeleccionada[0];
                 statsEnemigo[3] = armaSeleccionada[1];
@@ -1015,7 +1196,7 @@ public class App {
                 break;
 
             case 9:// chica militar
-                statsEnemigo[1] = random.nextInt(500) + 75;
+                statsEnemigo[1] = random.nextInt(300) + 75;
                 armaSeleccionada = elegirArmaEnemigo(armaEnemigos);
                 statsEnemigo[2] = armaSeleccionada[0];
                 statsEnemigo[3] = armaSeleccionada[1];
