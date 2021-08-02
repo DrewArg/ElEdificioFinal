@@ -283,8 +283,14 @@ public class App {
 
             if (puertaPesada == 0) {
                 /* ----- ----- EMPUJAS LA PUERTA FUERTEMENTE ----- ----- */
+                mensaje = "Decides entrar por la fuerza, pero la puerta vieja y oxidad genera un gran ruido.";
+                devuelveElMensaje(mensaje, "Puerta pesada", alerta);
+                stats = cuartoConLuz(stats);
+                statsJugador(stats);  
+
             } else if (puertaPesada == 1) {
                 /* ----- ----- CORRES HACIA ATRÁS Y SUBES AL PISO SUPERIOR ----- ----- */
+                
             }
         }
         return stats;
@@ -1239,4 +1245,87 @@ public class App {
         JOptionPane.showMessageDialog(null, mensajeFormateado(mensaje), titulo, tipoMensaje);
     }
 
+
+    public static void ahoracado(int [] stats){
+        String[][] letras = new String[2][4];
+        String palabra = "cama", letra;
+        int vidas = 0;
+
+
+        inicializarElArray(letras, palabra);
+        
+        
+
+        do {
+            letra = JOptionPane.showInputDialog("Ingrese una letra");
+
+            if(existeLaLetraEnLaPalabra(letras, letra) == false){
+                vidas++;
+                mostrarAhorcado(vidas);
+            }else{
+                mostrarResultado(letras);
+            }
+
+        } while (vidas < 5);
+
+
+    }
+
+    public static void inicializarElArray(String[][] letras, String palabra) {
+        for (int i = 0; i < letras[0].length; i++) {
+            letras[0][i] = palabra.substring(i, i + 1);
+            letras[1][i] = "_";
+        }
+    }
+
+    public static boolean existeLaLetraEnLaPalabra(String[][] letras, String letra) {
+
+        boolean hayCoincidencia = false;
+
+        for (int i = 0; i < letras[0].length; i++) {
+            if (letra.equalsIgnoreCase(letras[0][i])) {
+                letras[1][i] = letras[0][i];
+                hayCoincidencia = true;
+            }
+        }
+        return hayCoincidencia;
+    }
+
+    public static void mostrarResultado(String[][] letras) {
+
+        String resultado = "";
+        for (int i = 0; i < letras[0].length; i++) {
+            resultado = resultado + letras[1][i] + " ";
+        }
+
+//        JOptionPane.showMessageDialog(null, resultado);
+        System.out.println(resultado);
+    }
+
+    public static void mostrarAhorcado(int cantidadErrores){
+
+        if(cantidadErrores == 1) {
+            System.out.println(" 0");
+        }else if(cantidadErrores == 2){
+            System.out.println(" 0");
+            System.out.println("-|");
+        }else if(cantidadErrores == 3){
+            System.out.println(" 0");
+            System.out.println("-|-");
+        }else if(cantidadErrores == 4){
+            System.out.println(" 0");
+            System.out.println("-|-");
+            System.out.println("| ");
+        }else if(cantidadErrores == 5){
+            System.out.println(" 0");
+            System.out.println("-|-");
+            System.out.println("| |");
+        
+            
+        }
+    return 
+
+    }
+
+    
 }
