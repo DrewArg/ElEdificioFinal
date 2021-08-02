@@ -284,8 +284,15 @@ public class App {
 
             if (puertaPesada == 0) {
                 /* ----- ----- EMPUJAS LA PUERTA FUERTEMENTE ----- ----- */
+                mensaje = "La curiosidad te carcome por dentro, decides empujar la puerta fuertemente sin importar cuanto ruido pueda llegar a hacer.";
+                devuelveElMensaje(mensaje, "Puerta trabada", alerta);
+                stats = cuartoConLuz(stats);
             } else if (puertaPesada == 1) {
                 /* ----- ----- CORRES HACIA ATRÁS Y SUBES AL PISO SUPERIOR ----- ----- */
+                mensaje = "Corres hacia atrás y llegas al piso superior pero para tu mala suerte, te encuentras con un enemigo."
+                        + saltoLinea + ">Inmediatamente entras en una fase de pelea.";
+                devuelveElMensaje(mensaje, "Subes un piso", alerta);
+                stats = pelea(stats);
             }
         }
         return stats;
